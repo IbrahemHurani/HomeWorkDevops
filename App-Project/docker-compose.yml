@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  app1:
+    build: ./app
+    container_name: app1
+    volumes:
+      - app_logs:/logs
+
+  app2:
+    build: ./app
+    container_name: app2
+    volumes:
+      - app_logs:/logs
+
+  app3:
+    build: ./app
+    container_name: app3
+    volumes:
+      - app_logs:/logs
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - app1
+      - app2
+      - app3
+
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: mydb
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - db_logs:/var/log/postgresql
+
+volumes:
+  app_logs:
+  db_data:
+  db_logs:
